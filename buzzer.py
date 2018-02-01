@@ -2,7 +2,6 @@
 """
 doorbell
 ~~~~~~~~
-
 Python based doorbell for the Raspberry Pi
 """
 import os
