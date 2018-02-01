@@ -1,6 +1,10 @@
 #!/usr/bin/python
-# doorbell 2.0 
-# by Jared Thomas (jnthomas0129)
+"""
+doorbell
+~~~~~~~~
+
+Python based doorbell for the Raspberry Pi
+"""
 
 import os
 import time
@@ -9,20 +13,18 @@ import httplib, urllib
 from subprocess import call
 from datetime import datetime
 
-# pins
-# This is using one RGB LED and one button 
-# these will likely need to be changed unless your wiring setup is identical
-button = 5
-RED    = 22
-GREEN  = 18
-BLUE   = 16
+# pins (BCM) https://pinout.xyz/
+button = 4
+RED    = 25
+GREEN  = 24
+BLUE   = 23
 
 # variables
 startRecordingMinSec = 1
 
 # GPIO setup
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
@@ -34,18 +36,14 @@ GPIO.setup(BLUE, GPIO.OUT)
 buttonPressedTime = None
 def buttonStateChanged(pin):
     global buttonPressedTime
-
     if not (GPIO.input(pin)):
 	# button is down
 	if buttonPressedTime is None:
-	    
 	    # reset LEDs
 	    GPIO.output(RED, False)
 	    GPIO.output(GREEN, False)
 	    GPIO.output(BLUE, False)
-
 	    buttonPressedTime = datetime.now()
-
     else:
 	# button is up
 	if buttonPressedTime is not None:
@@ -63,14 +61,14 @@ def buttonStateChanged(pin):
 		GPIO.output(GREEN,False)
 
 		# indicate recording with red
-		os.system('arecord -d 2 -f S16_LE -r 41000 Greeting.wav &')
+		os.system('arecord -d 2 -f S16_LE -r 41000 ./sounds/Greeting.wav &')
 		GPIO.output(RED, True)
 		time.sleep(2)
 		GPIO.output(RED, False)
 
 		# indicate when playing back with blue
 		GPIO.output(BLUE, True)
-		os.system('aplay -d 2 -f S16_LE -r 41000 Greeting.wav &')
+		os.system('aplay -d 2 -f S16_LE -r 41000 ./sounds/Greeting.wav &')
 		time.sleep(2)
 		GPIO.output(BLUE, False)
 
@@ -80,7 +78,7 @@ def buttonStateChanged(pin):
 	        # play sound for regular doorbell
 		# mp3 file and location will need to be updated based on your setup
 		GPIO.output(BLUE, True)
-	        os.system('mpg123 -q /home/pi/Scripts/doorbell/sounds/doorbell.mp3 &')
+	        os.system('mpg123 -q /home/pi/Scripts/doorbell/sounds/doorbuzz.mp3 &')
 		time.sleep(.2)
 		GPIO.output(BLUE, False)
 
