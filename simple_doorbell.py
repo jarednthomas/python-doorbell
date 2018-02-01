@@ -10,28 +10,32 @@ import os
 import RPi.GPIO as GPIO
 from time import sleep
 
-GPIO.setmode(GPIO.BCM)
-
+# Pins (BCM) https://pinout.xyz/
 button_pin = 4
 blue_pin = 23
 
+# GPIO Setup
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(blue_pin, GPIO.OUT)
 
+# Variables
 led_state = False
-old_input_state = True                                             # pulled-up
-print("[Doorbell Active] CTRL-C to Quit")
-try:
+old_input_state = True
 
+try:
+    print("[Doorbell Active] CTRL-C to Quit")
     while True:
-        new_input_state = GPIO.input(button_pin)                   # down
-        if new_input_state == True and old_input_state == False:   # pressed
+        new_input_state = GPIO.input(button_pin)
+        
+        if new_input_state == True and old_input_state == False:
             led_state = not led_state
             os.system('aplay -q /home/pi/Scripts/doorbell/sounds/dong.wav &')
-        elif new_input_state == False and old_input_state == True: # released
+
+        elif new_input_state == False and old_input_state == True:
             led_state = not led_state
             os.system('aplay -q /home/pi/Scripts/doorbell/sounds/ding.wav &')
-	# update input state and led state
+
         old_input_state = new_input_state
         GPIO.output(blue_pin, led_state)
 
