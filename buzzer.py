@@ -12,10 +12,10 @@ import RPi.GPIO as GPIO
 from datetime import datetime
 
 # Pins (BCM) https://pinout.xyz/
-button = 4
-RED = 25
-GREEN = 24
-BLUE = 23
+button_pin = 4
+red_pin = 25
+green_pin = 24
+blue_pin = 23
 
 # Variables
 buttonHoldDuration = 1 # of seconds until recording is triggered
@@ -23,10 +23,10 @@ buttonHoldDuration = 1 # of seconds until recording is triggered
 # GPIO Setup
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(RED, GPIO.OUT)
-GPIO.setup(GREEN, GPIO.OUT)
-GPIO.setup(BLUE, GPIO.OUT)
+GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(red_pin, GPIO.OUT)
+GPIO.setup(green_pin, GPIO.OUT)
+GPIO.setup(blue_pin, GPIO.OUT)
 
 buttonPressedTime = None
 def buttonStateChanged(pin):
@@ -35,9 +35,9 @@ def buttonStateChanged(pin):
 
     if not (GPIO.input(pin)):
         if buttonPressedTime is None:
-            GPIO.output(RED, False)
-            GPIO.output(GREEN, False)
-            GPIO.output(BLUE, False)
+            GPIO.output(red_pin, False)
+            GPIO.output(green_pin, False)
+            GPIO.output(blue_pin, False)
             buttonPressedTime = datetime.now()
 
     else:
@@ -48,30 +48,30 @@ def buttonStateChanged(pin):
             # if button was held long enough
             if elapsed >= buttonHoldDuration:
                 # prompt user
-                GPIO.output(GREEN, True)
+                GPIO.output(green_pin, True)
                 os.system('mpg123 -q ./sounds/whos_there.mp3 &')
                 time.sleep(1.25)
-                GPIO.output(GREEN,False)
+                GPIO.output(green_pin,False)
                 # indicate recording with red
                 os.system('arecord -d 2 -f S16_LE -r 41000 ./sounds/recent_greeting.wav &')
-                GPIO.output(RED, True)
+                GPIO.output(red_pin, True)
                 time.sleep(2)
-                GPIO.output(RED, False)
+                GPIO.output(red_pin, False)
                 # indicate playback with blue
-                GPIO.output(BLUE, True)
+                GPIO.output(blue_pin, True)
                 os.system('aplay -d 2 -f S16_LE -r 41000 ./sounds/recent_greeting.wav &')
                 time.sleep(2)
-                GPIO.output(BLUE, False)
+                GPIO.output(blue_pin, False)
 
             # if button was not held long enough, regular buzzer
             elif elapsed < buttonHoldDuration:
-                GPIO.output(BLUE, True)
+                GPIO.output(blue_pin, True)
                 os.system('mpg123 -q ./sounds/doorbuzz.mp3 &')
                 time.sleep(.2)
-                GPIO.output(BLUE, False)
+                GPIO.output(blue_pin, False)
 
 try:
-    GPIO.add_event_detect(button, GPIO.BOTH, callback=buttonStateChanged)
+    GPIO.add_event_detect(button_pin, GPIO.BOTH, callback=buttonStateChanged)
     while True:
         time.sleep(1) # sleep to reduce CPU usage
 
@@ -79,7 +79,7 @@ except KeyboardInterrupt:
     print("\n")
 
 finally:
-    GPIO.output(RED, False)
-    GPIO.output(GREEN, False)
-    GPIO.output(BLUE, False)
+    GPIO.output(red_pin, False)
+    GPIO.output(green_pin, False)
+    GPIO.output(blue_pin, False)
     GPIO.cleanup()
