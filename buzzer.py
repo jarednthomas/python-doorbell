@@ -9,8 +9,6 @@ Python based doorbell for the Raspberry Pi
 import os
 import time
 import RPi.GPIO as GPIO
-import httplib, urllib
-from subprocess import call
 from datetime import datetime
 
 # pins (BCM) https://pinout.xyz/
@@ -30,7 +28,6 @@ GPIO.setup(RED, GPIO.OUT)
 GPIO.setup(GREEN, GPIO.OUT)
 GPIO.setup(BLUE, GPIO.OUT)
 
-
 buttonPressedTime = None
 def buttonStateChanged(pin):
     """ Defines Button Press Event """
@@ -42,7 +39,7 @@ def buttonStateChanged(pin):
             GPIO.output(GREEN, False)
             GPIO.output(BLUE, False)
             buttonPressedTime = datetime.now()
-            
+
     else:
         if buttonPressedTime is not None:
             elapsed = (datetime.now() - buttonPressedTime).total_seconds()
@@ -52,24 +49,24 @@ def buttonStateChanged(pin):
             if elapsed >= startRecordingMinSec:
                 # prompt user
                 GPIO.output(GREEN, True)
-                os.system('mpg123 -q /home/pi/Scripts/doorbell/sounds/whos_there.mp3 &')
+                os.system('mpg123 -q ./sounds/whos_there.mp3 &')
                 time.sleep(1.25)
                 GPIO.output(GREEN,False)
                 # indicate recording with red
-                os.system('arecord -d 2 -f S16_LE -r 41000 ./sounds/Greeting.wav &')
+                os.system('arecord -d 2 -f S16_LE -r 41000 ./sounds/recent_greeting.wav &')
                 GPIO.output(RED, True)
                 time.sleep(2)
                 GPIO.output(RED, False)
                 # indicate playback with blue
                 GPIO.output(BLUE, True)
-                os.system('aplay -d 2 -f S16_LE -r 41000 ./sounds/Greeting.wav &')
+                os.system('aplay -d 2 -f S16_LE -r 41000 ./sounds/recent_greeting.wav &')
                 time.sleep(2)
                 GPIO.output(BLUE, False)
 
             # if button was not held long enough, regular buzzer
             elif elapsed < startRecordingMinSec:
                 GPIO.output(BLUE, True)
-                os.system('mpg123 -q /home/pi/Scripts/doorbell/sounds/doorbuzz.mp3 &')
+                os.system('mpg123 -q ./sounds/doorbuzz.mp3 &')
                 time.sleep(.2)
                 GPIO.output(BLUE, False)
 
