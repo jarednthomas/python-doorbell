@@ -1,9 +1,9 @@
 #!/usr/bin/python
 """
-doorbell
+buzzer.py
 ~~~~~~~~
 
-Python based doorbell for the Raspberry Pi
+Python based apartment style buzzer for the Raspberry Pi
 """
 
 import os
@@ -11,16 +11,16 @@ import time
 import RPi.GPIO as GPIO
 from datetime import datetime
 
-# pins (BCM) https://pinout.xyz/
+# Pins (BCM) https://pinout.xyz/
 button = 4
 RED = 25
 GREEN = 24
 BLUE = 23
 
-# variables
-startRecordingMinSec = 1
+# Variables
+buttonHoldDuration = 1 # of seconds until recording is triggered
 
-# GPIO setup
+# GPIO Setup
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -46,7 +46,7 @@ def buttonStateChanged(pin):
             buttonPressedTime = None
 
             # if button was held long enough
-            if elapsed >= startRecordingMinSec:
+            if elapsed >= buttonHoldDuration:
                 # prompt user
                 GPIO.output(GREEN, True)
                 os.system('mpg123 -q ./sounds/whos_there.mp3 &')
@@ -64,7 +64,7 @@ def buttonStateChanged(pin):
                 GPIO.output(BLUE, False)
 
             # if button was not held long enough, regular buzzer
-            elif elapsed < startRecordingMinSec:
+            elif elapsed < buttonHoldDuration:
                 GPIO.output(BLUE, True)
                 os.system('mpg123 -q ./sounds/doorbuzz.mp3 &')
                 time.sleep(.2)
@@ -73,7 +73,7 @@ def buttonStateChanged(pin):
 try:
     GPIO.add_event_detect(button, GPIO.BOTH, callback=buttonStateChanged)
     while True:
-        time.sleep(2) # sleep to reduce CPU usage
+        time.sleep(1) # sleep to reduce CPU usage
 
 except KeyboardInterrupt:
     print("\n")
