@@ -17,7 +17,7 @@ green_pin = 24
 blue_pin = 23
 
 # Variables
-buttonHoldDuration = 1 # of seconds until recording is triggered
+buttonHoldDuration = 1
 
 # GPIO Setup
 GPIO.setwarnings(False)
@@ -31,14 +31,12 @@ buttonPressedTime = None
 def buttonStateChanged(pin):
     """ Defines Button Press Event """
     global buttonPressedTime
-
     if not (GPIO.input(pin)):
         if buttonPressedTime is None:
             GPIO.output(red_pin, False)
             GPIO.output(green_pin, False)
             GPIO.output(blue_pin, False)
             buttonPressedTime = datetime.now()
-
     else:
         if buttonPressedTime is not None:
             elapsed = (datetime.now() - buttonPressedTime).total_seconds()
