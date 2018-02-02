@@ -2,7 +2,6 @@
 """
 doorbell.py
 ~~~~~~~~~~~
-
 Python based doorbell script for the Raspberry Pi
 """
 
