@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-simple_doorbell.py
+doorbell.py
 ~~~~~~~~~~~
 
 Python based doorbell script for the Raspberry Pi
@@ -25,6 +25,7 @@ old_input_state = True
 
 try:
     print("[Doorbell Active] CTRL-C to Quit")
+
     while True:
         new_input_state = GPIO.input(button_pin)
         

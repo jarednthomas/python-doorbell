@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 """
 buzzer.py
 ~~~~~~~~
@@ -71,7 +71,7 @@ def buttonStateChanged(pin):
                 GPIO.output(blue_pin, False)
 
 try:
-    print("[Doorbell Active] CTRL-C to Quit")
+    print("[Buzzer Active] CTRL-C to Quit")
     GPIO.add_event_detect(button_pin, GPIO.BOTH, callback=buttonStateChanged)
     while True:
         time.sleep(1) # sleep to reduce CPU usage
