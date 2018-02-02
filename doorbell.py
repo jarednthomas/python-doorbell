@@ -28,7 +28,6 @@ try:
 
     while True:
         new_input_state = GPIO.input(button_pin)
-        
         if new_input_state == True and old_input_state == False:
             led_state = not led_state
             os.system('aplay -q /home/pi/Scripts/doorbell/sounds/dong.wav &')
